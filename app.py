@@ -82,59 +82,60 @@ for i, row in edited_df.iterrows():
     temp["unit"] = row["unit"]
     
     ingredient_matcher.append(temp)
-    
-ingredient_matcher = pd.concat(ingredient_matcher)
 
-ingredient_matcher["gc_amount"] = ingredient_matcher["size"].apply(lambda x: float(re.findall("\d+\.?\d*", x)[0]))
-ingredient_matcher["gc_unit"] = ingredient_matcher["size"].apply(lambda x: re.findall("[a-zA-Z]+", x)[0])
-ingredient_matcher["pack_amount"] = ingredient_matcher["gc_amount"] * ingredient_matcher["pack_size"]
-ingredient_matcher["pack_normed"] = ingredient_matcher["pack_amount"] * ingredient_matcher["gc_unit"].apply(lambda x: unit_conversions.get(x, 1))
-ingredient_matcher["pounds_per_pack_normed"] = ingredient_matcher["pack_normed"] / ingredient_matcher["trade_price"]
-ingredient_matcher["amount_excess"] = ingredient_matcher["pack_normed"] - ingredient_matcher["amount"] 
-ingredient_matcher["enough_food"] = ingredient_matcher["amount_excess"] > 0
-ingredient_matcher["price_rank"] = ingredient_matcher.groupby(["origin_index", "enough_food"])["pounds_per_pack_normed"].rank(method="min")
-ingredient_matcher["order_quantity"] = 1 # this will be the only value for now - need to create more rows with multiples
-ingredient_matcher["line_total"] = ingredient_matcher["order_quantity"] * ingredient_matcher["trade_price"]
-ingredient_matcher.loc[~ingredient_matcher["enough_food"], "price_rank"] = np.NaN
+if ingredient_matcher:
+    ingredient_matcher = pd.concat(ingredient_matcher)
 
-ingredient_matcher.loc[ingredient_matcher["manually_selected"], "price_rank"] = 0
+    ingredient_matcher["gc_amount"] = ingredient_matcher["size"].apply(lambda x: float(re.findall("\d+\.?\d*", x)[0]))
+    ingredient_matcher["gc_unit"] = ingredient_matcher["size"].apply(lambda x: re.findall("[a-zA-Z]+", x)[0])
+    ingredient_matcher["pack_amount"] = ingredient_matcher["gc_amount"] * ingredient_matcher["pack_size"]
+    ingredient_matcher["pack_normed"] = ingredient_matcher["pack_amount"] * ingredient_matcher["gc_unit"].apply(lambda x: unit_conversions.get(x, 1))
+    ingredient_matcher["pounds_per_pack_normed"] = ingredient_matcher["pack_normed"] / ingredient_matcher["trade_price"]
+    ingredient_matcher["amount_excess"] = ingredient_matcher["pack_normed"] - ingredient_matcher["amount"] 
+    ingredient_matcher["enough_food"] = ingredient_matcher["amount_excess"] > 0
+    ingredient_matcher["price_rank"] = ingredient_matcher.groupby(["origin_index", "enough_food"])["pounds_per_pack_normed"].rank(method="min")
+    ingredient_matcher["order_quantity"] = 1 # this will be the only value for now - need to create more rows with multiples
+    ingredient_matcher["line_total"] = ingredient_matcher["order_quantity"] * ingredient_matcher["trade_price"]
+    ingredient_matcher.loc[~ingredient_matcher["enough_food"], "price_rank"] = np.NaN
 
-with col_right:
-    st.text("Picked ingredients:")
-    if debug:
-        st.text("debug"); ingredient_matcher
-    chosen_ingredients = (
-        ingredient_matcher[ingredient_matcher["enough_food"]]
-        .sort_values("price_rank")
-        .groupby("origin_index")
-        .head(1)
-        .sort_values("origin_index")
-        .reset_index(drop=True)
-        # [["description", "pack_size", "size", "trade_price", "order_quantity", "line_total"]]
-    )
-    # in cases where an origin index has no adequate matching ingredients, we need to add
-    # a placeholder row that says "ingredient not found"
-    missing_indices = set(edited_df[(edited_df["ingredient"] != "") | (edited_df["ingredient"].isnull())| (edited_df["manual_ingredient_selector"].notna())].index) - set(chosen_ingredients["origin_index"])
+    ingredient_matcher.loc[ingredient_matcher["manually_selected"], "price_rank"] = 0
 
-    chosen_ingredients = pd.concat([
-        chosen_ingredients,
-        pd.DataFrame([{
-            "origin_index": i,
-            "description": "Ingredient not found",
-            "pack_size": np.NaN,
-            "size": np.NaN,
-            "trade_price": np.NaN,
-            "order_quantity": np.NaN,
-            "line_total": np.NaN,
-        } for i in missing_indices])
-    ]).sort_values("origin_index").reset_index(drop=True)
-    
-    chosen_ingredients[["description", "pack_size", "size", "trade_price", "order_quantity", "line_total"]]
-    
-    if not chosen_ingredients.empty:
-        st.text("Total cost: £" + str((chosen_ingredients["trade_price"] * chosen_ingredients["order_quantity"]).sum()))
+    with col_right:
+        st.text("Picked ingredients:")
+        if debug:
+            st.text("debug"); ingredient_matcher
+        chosen_ingredients = (
+            ingredient_matcher[ingredient_matcher["enough_food"]]
+            .sort_values("price_rank")
+            .groupby("origin_index")
+            .head(1)
+            .sort_values("origin_index")
+            .reset_index(drop=True)
+            # [["description", "pack_size", "size", "trade_price", "order_quantity", "line_total"]]
+        )
+        # in cases where an origin index has no adequate matching ingredients, we need to add
+        # a placeholder row that says "ingredient not found"
+        missing_indices = set(edited_df[(edited_df["ingredient"] != "") | (edited_df["ingredient"].isnull())| (edited_df["manual_ingredient_selector"].notna())].index) - set(chosen_ingredients["origin_index"])
 
-# TODO also apply conversions to input table
+        chosen_ingredients = pd.concat([
+            chosen_ingredients,
+            pd.DataFrame([{
+                "origin_index": i,
+                "description": "Ingredient not found",
+                "pack_size": np.NaN,
+                "size": np.NaN,
+                "trade_price": np.NaN,
+                "order_quantity": np.NaN,
+                "line_total": np.NaN,
+            } for i in missing_indices])
+        ]).sort_values("origin_index").reset_index(drop=True)
+        
+        chosen_ingredients[["description", "pack_size", "size", "trade_price", "order_quantity", "line_total"]]
+        
+        if not chosen_ingredients.empty:
+            st.text("Total cost: £" + str((chosen_ingredients["trade_price"] * chosen_ingredients["order_quantity"]).sum()))
+
+    # TODO also apply conversions to input table
 
 with st.expander("TODOs"):
     st.text("""
