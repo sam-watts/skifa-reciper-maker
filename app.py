@@ -53,8 +53,10 @@ df = pd.DataFrame(
 df["manual_ingredient_selector"] = df["manual_ingredient_selector"].astype("category").cat.add_categories(green_city["description"].unique())
 
 with col_left:
-    st.text("Input ingredients data here:")
+    st.text("Input ingredients data below")
     edited_df = st.data_editor(df, num_rows="dynamic")
+    st.markdown("Add ingredient, quantity and unit (eg. kg) and a matching ingredient will be shown in the right column from the green city price list. `manual_ingredient_selector` can be used to manually select an ingredient from the price list via search")
+    st.markdown("Master scaling factor will mutliply all quantities if the left table by this amount")
 
 edited_df["scaling_factor"] = 1 * master_scaling_factor
 edited_df["scaled_amount"] = (edited_df["amount"] * edited_df["scaling_factor"]).astype(str) + edited_df["unit"]
@@ -139,5 +141,5 @@ if ingredient_matcher:
 
 with st.expander("TODOs"):
     st.text("""
-    - [x] Add checking against buying multiple smaller packs vs. one bigger pack
+    - [ ] Add checking against buying multiple smaller packs vs. one bigger pack
     """)
