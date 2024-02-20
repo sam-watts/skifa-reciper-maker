@@ -35,6 +35,9 @@ unit_conversions = dict(
     ml=0.001,
     l=1,
     lt=1,
+    tbsp=0.015,
+    tsp=0.005,
+    cup=0.25,
 )
 
 fresh_produce = pd.DataFrame([
