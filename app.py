@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import re
 
-debug = True
+debug = False
 
 st.set_page_config(
     page_title="SKIFA Reciper Scaler",
@@ -39,6 +39,12 @@ unit_conversions = dict(
     tsp=0.005,
     cup=0.25,
 )
+
+"""
+TODO add more veg
+* garlic
+* parsnip
+"""
 
 fresh_produce = pd.DataFrame([
     ("@Courgette", 0.29, 0.6, None),
