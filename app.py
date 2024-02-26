@@ -40,11 +40,6 @@ unit_conversions = dict(
     cup=0.25,
 )
 
-"""
-TODO add more veg
-* garlic
-* parsnip
-"""
 
 fresh_produce = pd.DataFrame([
     ("@Courgette", 0.29, 0.6, None),

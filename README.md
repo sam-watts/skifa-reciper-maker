@@ -23,3 +23,34 @@ From chat with Tracey
 * Something about wanting onions and other vegetable quantities in grams as
   output? Maybe we can use a toggle here
 - [x] Get price estimate of fraction of ingredients that will be used
+
+more todo
+* add more veg
+  * garlic
+  * parsnip
+
+
+RECIPES TO TEST
+https://docs.google.com/document/d/1ix-8QerJS0DgRa08uHesUH_3yvKokf2C-ZfjFDzTXmY/edit
+
+Bulghur Wheat Chilli
+
+for 50
+12 medium yellow onion
+4 bulb garlic
+10-12 jalapeno (seeds removed if desired)
+15 tablespoon olive oil
+15 medium parsnip (~1.5kg)
+1.5kg bulgur wheat
+10-15 tablespoon chili powder, depending on taste
+25 teaspoons oregano
+25 teaspoons cumin
+7 teaspoons smoked paprika
+2.5 Flat teaspoon  of clove powder
+Salt (to taste)
+10kg canned tomatoes
+800g bittersweet chocolate
+1000-2000mls vegetable stock depending on absorption and desired thickness.
+5.5kg canned kidney beans (drained and rinsed)
+
+
