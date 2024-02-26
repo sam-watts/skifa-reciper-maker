@@ -140,8 +140,6 @@ for i, row in edited_df.iterrows():
     
     ingredient_matcher.append(temp)
     
-st.dataframe(pd.concat(ingredient_matcher))
-
 ingredient_matcher = pd.concat(ingredient_matcher)
 ingredient_matcher_manual = ingredient_matcher[ingredient_matcher["manually_selected"]]
 ingredient_matcher = ingredient_matcher[~ingredient_matcher["manually_selected"]]
